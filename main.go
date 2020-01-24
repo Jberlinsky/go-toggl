@@ -85,7 +85,7 @@ type Project struct {
 	Cid             int        `json:"cid"`
 	Name            string     `json:"name"`
 	Active          bool       `json:"active"`
-	Billable        bool       `json:"billable"`
+	Billable        int        `json:"billable"`
 	ServerDeletedAt *time.Time `json:"server_deleted_at,omitempty"`
 }
 
@@ -121,7 +121,7 @@ type TimeEntry struct {
 	Tags        []string   `json:"tags"`
 	Duration    int64      `json:"duration,omitempty"`
 	DurOnly     bool       `json:"duronly"`
-	Billable    bool       `json:"billable"`
+	Billable    int        `json:"billable"`
 }
 
 type DetailedTimeEntry struct {
@@ -139,7 +139,7 @@ type DetailedTimeEntry struct {
 	End             *time.Time `json:"end"`
 	Updated         *time.Time `json:"updated"`
 	Duration        int64      `json:"dur"`
-	Billable        bool       `json:"billable"`
+	Billable        int        `json:"billable"`
 	Tags            []string   `json:"tags"`
 }
 
@@ -447,7 +447,7 @@ func (e *TimeEntry) IsRunning() bool {
 func (session *Session) GetProjects(wid int) (projects []Project, err error) {
 	dlog.Printf("Getting projects for workspace %d", wid)
 	path := fmt.Sprintf("/workspaces/%v/projects", wid)
-	data,err := session.get(TogglAPI, path, nil)
+	data, err := session.get(TogglAPI, path, nil)
 	if err != nil {
 		return
 	}
@@ -464,7 +464,7 @@ func (session *Session) GetProject(id int) (project *Project, err error) {
 	}
 	dlog.Printf("Getting project with id %d", id)
 	path := fmt.Sprintf("/projects/%v", id)
-	data,err := session.get(TogglAPI, path, nil)
+	data, err := session.get(TogglAPI, path, nil)
 	if err != nil {
 		return nil, err
 	}
