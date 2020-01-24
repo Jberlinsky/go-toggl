@@ -234,15 +234,35 @@ func (session *Session) GetSummaryReport(workspace int, since, until string) (Su
 	return report, err
 }
 
+type DetailedReportConfig struct {
+	WorkspaceId int      `json:"workspace_id"`
+	Since       string   `json:"since"`
+	Until       string   `json:"until"`
+	Page        int      `json:"page"`
+	UserAgent   string   `json:"jc-toggl"`
+	Rounding    string   `json:"rounding"`
+	GroupIds    []string `json:"group_ids"`
+}
+
 // GetDetailedReport retrieves a detailed report using Toggle's reporting API.
-func (session *Session) GetDetailedReport(workspace int, since, until string, page int) (DetailedReport, error) {
+func (session *Session) GetDetailedReport(config *DetailedReportConfig) (DetailedReport, error) {
+	if config.UserAgent == nil {
+		config.UserAgent = "jc-toggl"
+	}
+
+	if config.Rounding == nil {
+		config.Rounding = "off"
+	}
+
 	params := map[string]string{
-		"user_agent":   "jc-toggl",
-		"since":        since,
-		"until":        until,
-		"page":         fmt.Sprintf("%d", page),
-		"rounding":     "on",
-		"workspace_id": fmt.Sprintf("%d", workspace)}
+		"user_agent":           config.UserAgent,
+		"since":                config.Since,
+		"until":                config.Until,
+		"page":                 fmt.Sprintf("%d", config.Page),
+		"rounding":             config.Rounding,
+		"workspace_id":         fmt.Sprintf("%d", config.WorkspaceId),
+		"members_of_group_ids": strings.Join(config.GroupIds, ","),
+	}
 	data, err := session.get(ReportsAPI, "/details", params)
 	if err != nil {
 		return DetailedReport{}, err
