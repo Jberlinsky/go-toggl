@@ -85,7 +85,7 @@ type Project struct {
 	Cid             int        `json:"cid"`
 	Name            string     `json:"name"`
 	Active          bool       `json:"active"`
-	Billable        int        `json:"billable"`
+	Billable        float32    `json:"billable"`
 	ServerDeletedAt *time.Time `json:"server_deleted_at,omitempty"`
 }
 
@@ -121,7 +121,7 @@ type TimeEntry struct {
 	Tags        []string   `json:"tags"`
 	Duration    int64      `json:"duration,omitempty"`
 	DurOnly     bool       `json:"duronly"`
-	Billable    int        `json:"billable"`
+	Billable    float32    `json:"billable"`
 }
 
 type DetailedTimeEntry struct {
@@ -139,7 +139,7 @@ type DetailedTimeEntry struct {
 	End             *time.Time `json:"end"`
 	Updated         *time.Time `json:"updated"`
 	Duration        int64      `json:"dur"`
-	Billable        int        `json:"billable"`
+	Billable        float32    `json:"billable"`
 	Tags            []string   `json:"tags"`
 }
 
