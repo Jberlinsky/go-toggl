@@ -1,3 +1,3 @@
-module github.com/jason0x43/go-toggl
+module github.com/Jberlinsky/go-toggl
 
 go 1.13
