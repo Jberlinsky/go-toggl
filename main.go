@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -87,6 +88,13 @@ type Project struct {
 	Active          bool       `json:"active"`
 	Billable        float32    `json:"billable"`
 	ServerDeletedAt *time.Time `json:"server_deleted_at,omitempty"`
+}
+
+type Group struct {
+	Wid  int    `json:"wid"`
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	At   string `json:"at"`
 }
 
 // IsActive indicates whether a project exists and is active
@@ -214,6 +222,17 @@ func (session *Session) GetAccount() (Account, error) {
 	return account, err
 }
 
+func (session *Session) GetGroups(wid int) ([]Group, error) {
+	path := fmt.Sprintf("/workspaces/%v/groups", wid)
+	data, err := session.get(TogglAPI, path, nil)
+	if err != nil {
+		return []Group{}, err
+	}
+	var groups []Group
+	err = decodeGroups(data, &groups)
+	return groups, err
+}
+
 // GetSummaryReport retrieves a summary report using Toggle's reporting API.
 func (session *Session) GetSummaryReport(workspace int, since, until string) (SummaryReport, error) {
 	params := map[string]string{
@@ -246,11 +265,11 @@ type DetailedReportConfig struct {
 
 // GetDetailedReport retrieves a detailed report using Toggle's reporting API.
 func (session *Session) GetDetailedReport(config *DetailedReportConfig) (DetailedReport, error) {
-	if config.UserAgent == nil {
+	if config.UserAgent == "" {
 		config.UserAgent = "jc-toggl"
 	}
 
-	if config.Rounding == nil {
+	if config.Rounding == "" {
 		config.Rounding = "off"
 	}
 
@@ -865,6 +884,15 @@ func decodeSession(data []byte, session *Session) error {
 func decodeAccount(data []byte, account *Account) error {
 	dec := json.NewDecoder(bytes.NewReader(data))
 	err := dec.Decode(account)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func decodeGroups(data []byte, groups *[]Group) error {
+	dec := json.NewDecoder(bytes.NewReader(data))
+	err := dec.Decode(groups)
 	if err != nil {
 		return err
 	}
